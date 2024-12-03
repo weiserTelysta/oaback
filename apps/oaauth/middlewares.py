@@ -8,6 +8,7 @@ from django.http.response import JsonResponse
 from rest_framework.status import HTTP_403_FORBIDDEN
 from jwt.exceptions import ExpiredSignatureError
 from django.contrib.auth.models import AnonymousUser
+from django.shortcuts import reverse
 
 OAUser = get_user_model()
 
@@ -18,7 +19,7 @@ class LoginCheckMiddleware(MiddlewareMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 对于那些不需要登录就能访问的接口，可以写在这里
-        self.white_list = ['/auth/login', '/auth/register','/staff/active']
+        self.white_list = [reverse('oaauth:login'),reverse('staff:active_staff')]
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         # 1. 如果返回None，那么会正常执行（包括执行视图、执行其他中间件的代码）
