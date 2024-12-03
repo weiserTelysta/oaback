@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from email.policy import default
 from pathlib import Path
+import environ
+import os
+
+
+env = environ.Env()
+BASE_DIR = Path(__file__).resolve().parent.parent
+# 读取.env文件，在服务器项目的根路径上要创建一个
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,15 +94,16 @@ WSGI_APPLICATION = 'oaback.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "zhiliaooa",
-        "HOST": "localhost",
-        "PORT": "3306",
-        "USER": "root",
-        "PASSWORD": "1816153515Xx",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        "NAME": env.str('DB_NAME', 'zhiliaooa'),
+        "USER": env.str('DB_USER', "root"),
+        "PASSWORD": env.str("DB_PASSWORD", "root"),
+        "HOST": env.str('DB_HOST', 'localhost'),
+        "PORT": env.str('DB_PORT', 3306),
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -167,11 +177,14 @@ EMAIL_HOST_USER = 'weiser@telysta.com'
 EMAIL_HOST_PASSWORD = '25RKx9rTz3hY2KNQ'
 DEFAULT_FROM_EMAIL = 'weiser@telysta.com'
 
-# CELERY settings
-# 中间人
-CELERY_BROKER_URL = 'redis://localhost:6379/1'
-# 指定结果的接收地址
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
+# CELERY相关配置
+# 中间人的配置
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/1')
+CELERY_RESULT_BACKEND = env.str('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/2')
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+
 
 # 缓存设置
 CACHES = {
